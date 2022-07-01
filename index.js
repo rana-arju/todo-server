@@ -1,5 +1,5 @@
 const express = require("express");
-const {MongoClient, ServerApiVersion} = require("mongodb")
+const {MongoClient, ServerApiVersion, ObjectId} = require("mongodb")
 const cors = require("cors");
 require("dotenv").config();
 const mongoose = require("mongoose");
@@ -16,6 +16,7 @@ async function run() {
   try {
     await client.connect();
     const todoAddCollections = client.db("todoCollection").collection("addlist");
+    const todoComplateCollections = client.db("todoCollection").collection("complateList");
 
 
 
@@ -27,8 +28,33 @@ async function run() {
     })
    //todo list Get
    app.get('/todo', async(req, res) => {
+      const lists = await todoAddCollections.find().toArray();
+      res.send(lists);
+   });
+   //todo one list update
+   app.put('/todo/:id', async(req, res) => {
       const lists = await todoAddCollections.find({}).toArray();
       res.send(lists);
+   });
+   //todo list complate
+  //  app.put('/todo/complate/:id', async(req, res) => {
+  //     const id = req.params.id;
+  //     const query = {_id: ObjectId(id).trim()};
+  //     const options = {upsert: true};
+  //     const updateDoc = {
+  //       $set:{
+  //         complate: true,
+  //       }
+  //     };
+  //     const result = await todoAddCollections.updateOne(query, updateDoc, options);
+  //     // res.send(result);
+  //  });
+   //todo list Get
+   app.delete('/todo/:id', async(req, res) => {
+    const id = req.params.id;
+    const query = {_id: ObjectId(id)}
+    const result = await todoAddCollections.deleteOne(query);
+      res.send(result);
    });
 
 
