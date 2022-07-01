@@ -23,17 +23,29 @@ async function run() {
         const list = req.body;
          const result = await todoAddCollections.insertOne(list);
         res.send(result);
-    })
+    });
 
    //todo list Get
    app.get('/todo', async(req, res) => {
-      const lists = await todoAddCollections.find().toArray();
+      const lists = await todoAddCollections.find({}).toArray();
       res.send(lists);
    });
+   //Delete any item from todocollection
   app.delete('/todo/:id', async(req, res) => {
     const id = req.params.id;
      const query = {_id: ObjectId(id)};
      const result = await todoAddCollections.deleteOne(query);
+      res.send(result);
+   });
+   app.put('/todo/:id', async(req, res) => {
+    const id = req.params.id;
+     const query = {_id: ObjectId(id)};
+     const item = req.body;
+     const options = {upsert: true};
+     const updateDoc = {
+      $set: item
+     }
+     const result = await todoAddCollections.updateOne(query, updateDoc, options);
       res.send(result);
    });
    //todo list complate
